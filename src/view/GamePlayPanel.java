@@ -349,8 +349,8 @@ public class GamePlayPanel extends JPanel {
         int baseCell = Math.min(halfW - 42, availH - 42) / 10;
         baseCell = Math.max(22, Math.min(baseCell, 48));
 
-        int myCell  = Math.max(20, (int)(baseCell * 0.92));   // 92% — nhỏ hơn địch 1 chút
-        int oppCell = Math.max(24, Math.min((int)(baseCell * 1.08), 52)); // 108%
+        int myCell  = Math.max(20, (int)(baseCell * 0.92));  
+        int oppCell = Math.max(24, Math.min((int)(baseCell * 1.08), 52));
 
         int myBW  = myCell  * 10 + 32 + 10;
         int myBH  = myCell  * 10 + 32 + 10;

@@ -571,9 +571,6 @@ public final class UIComponents {
         return card;
     }
 
-    // ══════════════════════════════════════════
-    //  PRIVATE DIALOG HELPERS
-    // ══════════════════════════════════════════
 
     private static JPanel buildFloatingPanel() {
         return new JPanel() {
@@ -733,10 +730,6 @@ public final class UIComponents {
         });
     }
 
-
-    // ══════════════════════════════════════════
-    //  PRIVATE HELPERS
-    // ══════════════════════════════════════════
 
     private static JButton buildButton(String text, Color base, Color hover, Color fg, int radius) {
         JButton btn = new JButton(text) {

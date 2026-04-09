@@ -9,33 +9,26 @@ public final class UITheme {
 
     private UITheme() {}
 
-    /** Nền chính toàn màn hình */
-    public static final Color BG_PRIMARY      = new Color(13, 27, 62);     // Navy đậm
-    /** Nền phụ cho card / panel */
-    public static final Color BG_SURFACE      = new Color(22, 42, 88);     // Navy nhạt hơn
-    /** Nền nổi bật (hover, selected) */
-    public static final Color BG_ELEVATED     = new Color(30, 58, 118);    // Blue 800
+    public static final Color BG_PRIMARY      = new Color(13, 27, 62);     
+    public static final Color BG_SURFACE      = new Color(22, 42, 88);    
+    public static final Color BG_ELEVATED     = new Color(30, 58, 118);  
 
-    /** Màu chính của app — xanh dương tươi */
-    public static final Color PRIMARY         = new Color(37, 99, 235);    // Blue 600
-    public static final Color PRIMARY_LIGHT   = new Color(96, 165, 250);   // Blue 400
-    public static final Color PRIMARY_DARK    = new Color(29, 78, 216);    // Blue 700
+    public static final Color PRIMARY         = new Color(37, 99, 235);  
+    public static final Color PRIMARY_LIGHT   = new Color(96, 165, 250); 
+    public static final Color PRIMARY_DARK    = new Color(29, 78, 216);  
 
-    /** Accent — cyan neon */
-    public static final Color ACCENT          = new Color(6, 182, 212);    // Cyan 500
-    public static final Color ACCENT_LIGHT    = new Color(103, 232, 249);  // Cyan 300
+    public static final Color ACCENT          = new Color(6, 182, 212);  
+    public static final Color ACCENT_LIGHT    = new Color(103, 232, 249);
 
-    /** Trạng thái */
-    public static final Color SUCCESS         = new Color(34, 197, 94);    // Green 500
+    public static final Color SUCCESS         = new Color(34, 197, 94);  
     public static final Color SUCCESS_DARK    = new Color(22, 163, 74);
-    public static final Color DANGER          = new Color(239, 68, 68);    // Red 500
+    public static final Color DANGER          = new Color(239, 68, 68);  
     public static final Color DANGER_DARK     = new Color(220, 38, 38);
-    public static final Color WARNING         = new Color(234, 179, 8);    // Yellow 500
+    public static final Color WARNING         = new Color(234, 179, 8);  
 
-    /** Text */
-    public static final Color TEXT_PRIMARY    = new Color(241, 245, 249);  // Slate 100
-    public static final Color TEXT_SECONDARY  = new Color(148, 163, 184);  // Slate 400
-    public static final Color TEXT_MUTED      = new Color(71, 85, 105);    // Slate 600
+    public static final Color TEXT_PRIMARY    = new Color(241, 245, 249);
+    public static final Color TEXT_SECONDARY  = new Color(148, 163, 184);
+    public static final Color TEXT_MUTED      = new Color(71, 85, 105);  
     public static final Color TEXT_ON_PRIMARY = Color.WHITE;
 
     public static final Color BORDER          = new Color(51, 78, 140);
@@ -43,7 +36,7 @@ public final class UITheme {
 
 
 
-    public static final String FONT_DISPLAY = "Bahnschrift";  // Available on Windows; fallback below
+    public static final String FONT_DISPLAY = "Bahnschrift"; 
     public static final String FONT_BODY    = "Segoe UI";
     public static final String FONT_MONO    = "Consolas";
 
