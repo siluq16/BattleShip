@@ -282,6 +282,8 @@ public final class UIComponents {
         root.add(btnRow, gbc);
 
         dialog.setContentPane(root);
+        
+        dialog.setVisible(true);
         return result[0] != null ? result : null;
     }
 
