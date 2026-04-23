@@ -15,24 +15,25 @@ public class SetupPanel extends JPanel {
         void onExit();
     }
 
-    private BoardPanel    boardPanel;
-    private Board         userBoard;
+    private BoardPanel  boardPanel;
+    private Board       userBoard;
     private SetupListener listener;
-    private boolean       isLanMode = false;
+    private boolean     isLanMode = false;
 
     private ai.AIDifficulty selectedDifficulty = ai.AIDifficulty.HARD;
-    private JPanel          difficultyPanel;
+    private JPanel difficultyPanel; 
 
     private static final int TOTAL_SECONDS = 60;
-    private int   secondsLeft   = TOTAL_SECONDS;
-    private Timer countdownTimer;
-    private JLabel timerLabel;
+    private int     secondsLeft = TOTAL_SECONDS;
+    private Timer   countdownTimer;
+    private JLabel  timerLabel;
 
     private JPanel     waitingOverlay;
     private JLabel     waitingLabel;
     private JPanel     centerStack;
     private static final String CARD_BOARD   = "BOARD";
     private static final String CARD_WAITING = "WAITING";
+
 
     public SetupPanel(SetupListener listener) {
         this.listener = listener;
@@ -46,9 +47,13 @@ public class SetupPanel extends JPanel {
         setupCountdown();
     }
 
-    public void setListener(SetupListener listener) {
-        this.listener = listener;
+    public SetupPanel(Runnable onStart) {
+        this(new SetupListener() {
+            public void onStart() { onStart.run(); }
+            public void onExit()  { }
+        });
     }
+
 
     private void buildUI() {
         add(buildHeader(), BorderLayout.NORTH);
@@ -63,17 +68,18 @@ public class SetupPanel extends JPanel {
         add(buildActionBar(), BorderLayout.SOUTH);
     }
 
+
     private JPanel buildHeader() {
         JPanel bar = new JPanel(new BorderLayout()) {
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setColor(new Color(0, 0, 0, 60));
                 g2.fillRect(0, 0, getWidth(), getHeight());
-                GradientPaint gp = new GradientPaint(0, getHeight() - 2, UITheme.ACCENT,
-                                                     getWidth(), getHeight() - 2, UITheme.PRIMARY);
+                GradientPaint gp = new GradientPaint(0, getHeight()-2, UITheme.ACCENT,
+                                                     getWidth(), getHeight()-2, UITheme.PRIMARY);
                 g2.setPaint(gp);
-                g2.setStroke(new java.awt.BasicStroke(2f));
-                g2.drawLine(0, getHeight() - 2, getWidth(), getHeight() - 2);
+                g2.setStroke(new BasicStroke(2f));
+                g2.drawLine(0, getHeight()-2, getWidth(), getHeight()-2);
                 g2.dispose();
             }
         };
@@ -97,15 +103,15 @@ public class SetupPanel extends JPanel {
                 g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(),
                         UITheme.RADIUS_PILL, UITheme.RADIUS_PILL));
                 g2.setColor(secondsLeft <= 10 ? UITheme.DANGER_DARK : UITheme.BORDER);
-                g2.setStroke(new java.awt.BasicStroke(1.2f));
-                g2.draw(new RoundRectangle2D.Float(0.6f, 0.6f, getWidth() - 1.2f, getHeight() - 1.2f,
+                g2.setStroke(new BasicStroke(1.2f));
+                g2.draw(new RoundRectangle2D.Float(0.6f, 0.6f, getWidth()-1.2f, getHeight()-1.2f,
                         UITheme.RADIUS_PILL, UITheme.RADIUS_PILL));
                 g2.setFont(getFont());
                 FontMetrics fm = g2.getFontMetrics();
                 String t = getText();
                 g2.setColor(Color.WHITE);
-                g2.drawString(t, (getWidth() - fm.stringWidth(t)) / 2,
-                        (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
+                g2.drawString(t, (getWidth()-fm.stringWidth(t))/2,
+                        (getHeight()+fm.getAscent()-fm.getDescent())/2);
                 g2.dispose();
             }
         };
@@ -114,13 +120,15 @@ public class SetupPanel extends JPanel {
         timerLabel.setPreferredSize(new Dimension(64, 30));
 
         JLabel badge = UIComponents.badgeLabel("SETUP PHASE", UITheme.PRIMARY);
+
         right.add(timerLabel);
         right.add(badge);
 
-        bar.add(left,  BorderLayout.WEST);
+        bar.add(left, BorderLayout.WEST);
         bar.add(right, BorderLayout.EAST);
         return bar;
     }
+
 
     private JPanel buildCenter() {
         JPanel center = UIComponents.transparentPanel(new GridBagLayout());
@@ -129,9 +137,11 @@ public class SetupPanel extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = 0; gbc.fill = GridBagConstraints.BOTH; gbc.weighty = 1;
 
+        // Board card
         gbc.gridx = 0; gbc.weightx = 0; gbc.insets = new Insets(0, 0, 0, 20);
         center.add(buildBoardCard(), gbc);
 
+        // Info panel
         gbc.gridx = 1; gbc.weightx = 1; gbc.insets = new Insets(0, 0, 0, 0);
         center.add(buildInfoPanel(), gbc);
 
@@ -181,10 +191,10 @@ public class SetupPanel extends JPanel {
         info.add(infoTitle, gbc);
 
         String[][] guides = {
-            { "•", "Kéo & thả tàu",     "Di chuyển tàu đến vị trí mong muốn" },
-            { "•", "Click phải để xoay", "Đổi hướng tàu ngang ↔ dọc"         },
-            { "•", "Ngẫu Nhiên",         "Xếp tàu tự động ngẫu nhiên"         },
-            { "•", "Đếm ngược 60 giây",  "Hết giờ sẽ tự động bắt đầu"        },
+            { "•",  "Kéo & thả tàu",          "Di chuyển tàu đến vị trí mong muốn" },
+            { "•",  "Click phải để xoay",      "Đổi hướng tàu ngang ↔ dọc"         },
+            { "•",  "Ngẫu Nhiên",              "Xếp tàu tự động ngẫu nhiên"         },
+            { "•",  "Đếm ngược 60 giây",       "Hết giờ sẽ tự động bắt đầu"        },
         };
         for (int i = 0; i < guides.length; i++) {
             gbc.gridy = i + 1;
@@ -192,10 +202,12 @@ public class SetupPanel extends JPanel {
             info.add(buildGuideRow(guides[i][0], guides[i][1], guides[i][2]), gbc);
         }
 
-        gbc.gridy = guides.length + 1; gbc.weighty = 1; gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridy = guides.length + 1; gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
         info.add(Box.createVerticalGlue(), gbc);
 
-        gbc.gridy = guides.length + 2; gbc.weighty = 0; gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridy = guides.length + 2; gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(0, 0, 0, 0);
         info.add(buildFleetSummary(), gbc);
 
@@ -230,7 +242,7 @@ public class SetupPanel extends JPanel {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(UITheme.BG_ELEVATED);
-                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(),
+                g2.fill(new RoundRectangle2D.Float(0,0,getWidth(),getHeight(),
                         UITheme.RADIUS_MD, UITheme.RADIUS_MD));
                 g2.dispose();
             }
@@ -257,16 +269,17 @@ public class SetupPanel extends JPanel {
 
     private JPanel buildShipRow(int len, int count, String name) {
         JPanel row = UIComponents.transparentPanel(new BorderLayout(8, 0));
-        JLabel nameLbl = new JLabel(name + (count > 1 ? " x" + count : ""));
+        JLabel nameLbl = new JLabel(name + (count > 1 ? " x"+count : ""));
         nameLbl.setFont(UITheme.body(11, Font.PLAIN));
         nameLbl.setForeground(UITheme.TEXT_SECONDARY);
+        // Hull blocks
         JPanel blocks = UIComponents.transparentPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
         for (int i = 0; i < len; i++) {
             JPanel b = new JPanel() {
                 @Override protected void paintComponent(Graphics g) {
                     Graphics2D g2 = (Graphics2D) g.create();
                     g2.setColor(UITheme.PRIMARY);
-                    g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 2, 2));
+                    g2.fill(new RoundRectangle2D.Float(0,0,getWidth(),getHeight(),2,2));
                     g2.dispose();
                 }
             };
@@ -279,16 +292,17 @@ public class SetupPanel extends JPanel {
         return row;
     }
 
+
     private JPanel buildActionBar() {
         JPanel bar = new JPanel(new BorderLayout(12, 0)) {
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
-                g2.setColor(new Color(0, 0, 0, 60));
-                g2.fillRect(0, 0, getWidth(), getHeight());
-                GradientPaint gp = new GradientPaint(0, 0, UITheme.PRIMARY, getWidth(), 0, UITheme.ACCENT);
+                g2.setColor(new Color(0,0,0,60));
+                g2.fillRect(0,0,getWidth(),getHeight());
+                GradientPaint gp = new GradientPaint(0,0,UITheme.PRIMARY,getWidth(),0,UITheme.ACCENT);
                 g2.setPaint(gp);
-                g2.setStroke(new java.awt.BasicStroke(2f));
-                g2.drawLine(0, 0, getWidth(), 0);
+                g2.setStroke(new BasicStroke(2f));
+                g2.drawLine(0,0,getWidth(),0);
                 g2.dispose();
             }
         };
@@ -302,7 +316,6 @@ public class SetupPanel extends JPanel {
             if (listener != null) listener.onExit();
         });
 
-        // Difficulty selector
         JPanel diffPanel = UIComponents.transparentPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
         JLabel diffLabel = new JLabel("Độ khó:");
         diffLabel.setFont(UITheme.body(13, Font.BOLD));
@@ -311,36 +324,6 @@ public class SetupPanel extends JPanel {
         JButton diffBtn = UIComponents.outlineButton(selectedDifficulty.label + "  ▲");
         diffBtn.setPreferredSize(new Dimension(240, 44));
 
-        JPopupMenu popup = buildDifficultyPopup(diffBtn);
-
-        diffBtn.addActionListener(e ->
-                popup.show(diffBtn, 0, -popup.getPreferredSize().height - 4));
-
-        diffPanel.add(diffLabel);
-        diffPanel.add(diffBtn);
-        difficultyPanel = diffPanel;
-
-        JPanel rightBtns = UIComponents.transparentPanel(new GridLayout(1, 2, 12, 0));
-
-        JButton btnRandom = UIComponents.outlineButton("Ngẫu Nhiên");
-        btnRandom.addActionListener(e -> {
-            userBoard.placeShipsRandomly();
-            boardPanel.repaint();
-        });
-
-        JButton btnStart = UIComponents.successButton("VÀO TRẬN");
-        btnStart.addActionListener(e -> handleStart());
-
-        rightBtns.add(btnRandom);
-        rightBtns.add(btnStart);
-
-        bar.add(btnExit,   BorderLayout.WEST);
-        bar.add(diffPanel, BorderLayout.CENTER);
-        bar.add(rightBtns, BorderLayout.EAST);
-        return bar;
-    }
-
-    private JPopupMenu buildDifficultyPopup(JButton diffBtn) {
         JPopupMenu popup = new JPopupMenu() {
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -348,8 +331,8 @@ public class SetupPanel extends JPanel {
                 g2.setColor(UITheme.BG_SURFACE);
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), UITheme.RADIUS_MD, UITheme.RADIUS_MD);
                 g2.setColor(UITheme.BORDER);
-                g2.setStroke(new java.awt.BasicStroke(1.2f));
-                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, UITheme.RADIUS_MD, UITheme.RADIUS_MD);
+                g2.setStroke(new BasicStroke(1.2f));
+                g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, UITheme.RADIUS_MD, UITheme.RADIUS_MD);
                 g2.dispose();
             }
         };
@@ -376,7 +359,7 @@ public class SetupPanel extends JPanel {
             item.setFont(UITheme.body(13, Font.PLAIN));
             item.setForeground(UITheme.TEXT_PRIMARY);
             item.setOpaque(false);
-            item.setBackground(new Color(0, 0, 0, 0));
+            item.setBackground(new Color(0,0,0,0));
             item.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
             item.setPreferredSize(new Dimension(230, 36));
             item.addActionListener(e -> {
@@ -386,7 +369,33 @@ public class SetupPanel extends JPanel {
             });
             popup.add(item);
         }
-        return popup;
+
+        diffBtn.addActionListener(e -> {
+            popup.show(diffBtn, 0, -popup.getPreferredSize().height - 4);
+        });
+
+        diffPanel.add(diffLabel);
+        diffPanel.add(diffBtn);
+        difficultyPanel = diffPanel; 
+        
+        JPanel rightBtns = UIComponents.transparentPanel(new GridLayout(1, 2, 12, 0));
+
+        JButton btnRandom = UIComponents.outlineButton("Ngẫu Nhiên");
+        btnRandom.addActionListener(e -> {
+            userBoard.placeShipsRandomly();
+            boardPanel.repaint();
+        });
+
+        JButton btnStart = UIComponents.successButton("VÀO TRẬN");
+        btnStart.addActionListener(e -> handleStart());
+
+        rightBtns.add(btnRandom);
+        rightBtns.add(btnStart);
+
+        bar.add(btnExit,    BorderLayout.WEST);
+        bar.add(diffPanel,  BorderLayout.CENTER);
+        bar.add(rightBtns,  BorderLayout.EAST);
+        return bar;
     }
 
     private JPanel buildWaitingOverlay() {
@@ -443,7 +452,7 @@ public class SetupPanel extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0; gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.CENTER;
-        gbc.fill   = GridBagConstraints.NONE;
+        gbc.fill = GridBagConstraints.NONE;
         overlay.add(card, gbc);
         return overlay;
     }
@@ -467,7 +476,7 @@ public class SetupPanel extends JPanel {
         timerLabel.repaint();
     }
 
-    public void stopCountdown() {
+    private void stopCountdown() {
         if (countdownTimer != null) countdownTimer.stop();
     }
 
@@ -475,6 +484,7 @@ public class SetupPanel extends JPanel {
         stopCountdown();
         if (listener != null) listener.onStart();
     }
+
 
     public void showWaitingOverlay() {
         ((CardLayout) centerStack.getLayout()).show(centerStack, CARD_WAITING);
@@ -487,6 +497,23 @@ public class SetupPanel extends JPanel {
     public void setWaitingText(String text) {
         if (waitingLabel != null) waitingLabel.setText(text);
     }
+
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g.create();
+        java.awt.Image bg = ImageLoader.getGif("bggif");
+        if (bg != null) {
+            g2.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
+            g2.setColor(new Color(5, 15, 45, 160));
+            g2.fillRect(0, 0, getWidth(), getHeight());
+        } else {
+            UITheme.paintBackground(g2, getWidth(), getHeight());
+        }
+        g2.dispose();
+    }
+
 
     public Board getBoard() { return userBoard; }
 
@@ -510,20 +537,5 @@ public class SetupPanel extends JPanel {
     public void setLanMode(boolean lan) {
         this.isLanMode = lan;
         if (difficultyPanel != null) difficultyPanel.setVisible(!lan);
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g.create();
-        java.awt.Image bg = ImageLoader.getGif("bggif");
-        if (bg != null) {
-            g2.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
-            g2.setColor(new Color(5, 15, 45, 160));
-            g2.fillRect(0, 0, getWidth(), getHeight());
-        } else {
-            UITheme.paintBackground(g2, getWidth(), getHeight());
-        }
-        g2.dispose();
     }
 }

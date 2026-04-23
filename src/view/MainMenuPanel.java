@@ -1,7 +1,9 @@
 package view;
 
 import javax.swing.*;
+
 import utils.ImageLoader;
+
 import java.awt.*;
 
 public class MainMenuPanel extends JPanel {
@@ -13,33 +15,13 @@ public class MainMenuPanel extends JPanel {
         void onPlayEvE();
     }
 
-    private MainMenuListener listener;
-
-    private JButton btnPvE, btnHost, btnJoin, btnEvE;
+    private final MainMenuListener listener;
 
     public MainMenuPanel(MainMenuListener listener) {
         this.listener = listener;
         setOpaque(false);
         setLayout(new BorderLayout());
         buildUI();
-    }
-
-    public void setListener(MainMenuListener listener) {
-        this.listener = listener;
-        rewireButtons();
-    }
-
-    private void rewireButtons() {
-        if (btnPvE  != null) { rewire(btnPvE,  () -> { if (listener != null) listener.onPlayPvE(); }); }
-        if (btnHost != null) { rewire(btnHost,  () -> { if (listener != null) listener.onHostLAN(); }); }
-        if (btnJoin != null) { rewire(btnJoin,  () -> { if (listener != null) listener.onJoinLAN(); }); }
-        if (btnEvE  != null) { rewire(btnEvE,   () -> { if (listener != null) listener.onPlayEvE(); }); }
-    }
-
-    private static void rewire(JButton btn, Runnable action) {
-        for (java.awt.event.ActionListener al : btn.getActionListeners())
-            btn.removeActionListener(al);
-        btn.addActionListener(e -> action.run());
     }
 
     private void buildUI() {
@@ -49,10 +31,11 @@ public class MainMenuPanel extends JPanel {
         left.setPreferredSize(new Dimension(320, 0));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx   = 0;
-        gbc.fill    = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1;
-        gbc.anchor  = GridBagConstraints.WEST;
+        gbc.anchor = GridBagConstraints.WEST;
+
 
         gbc.gridy = 1; gbc.insets = new Insets(0, 30, 8, 0);
         left.add(makeGradientLabel("BATTLESHIP", 30, UITheme.ACCENT_LIGHT, UITheme.PRIMARY_LIGHT), gbc);
@@ -63,25 +46,31 @@ public class MainMenuPanel extends JPanel {
         sub.setForeground(UITheme.TEXT_SECONDARY);
         left.add(sub, gbc);
 
-        String[] labels  = { "CHƠI VỚI MÁY", "TẠO PHÒNG LAN", "VÀO PHÒNG LAN", "MÁY VS MÁY" };
-        JButton[] buttons = new JButton[labels.length];
-
+        String[] labels = {
+            "CHƠI VỚI MÁY",
+            "TẠO PHÒNG LAN",
+            "VÀO PHÒNG LAN",
+            "MÁY VS MÁY",
+        };
+        Runnable[] actions = {
+            listener::onPlayPvE,
+            listener::onHostLAN,
+            listener::onJoinLAN,
+            listener::onPlayEvE,
+        };
         for (int i = 0; i < labels.length; i++) {
             gbc.gridy = 3 + i;
             gbc.insets = new Insets(5, 0, 5, 0);
-            buttons[i] = UIComponents.primaryButton(labels[i]);
-            left.add(buttons[i], gbc);
+            JButton btn = UIComponents.primaryButton(labels[i]);
+            final Runnable act = actions[i];
+            btn.addActionListener(e -> act.run());
+            left.add(btn, gbc);
         }
 
-        btnPvE  = buttons[0];
-        btnHost = buttons[1];
-        btnJoin = buttons[2];
-        btnEvE  = buttons[3];
-
-        rewireButtons();
 
         add(left, BorderLayout.WEST);
     }
+
 
     private JLabel makeGradientLabel(String text, int size, Color from, Color to) {
         JLabel lbl = new JLabel(text, SwingConstants.LEFT) {
@@ -100,6 +89,7 @@ public class MainMenuPanel extends JPanel {
         lbl.setFont(UITheme.display(size, Font.BOLD));
         return lbl;
     }
+
 
     @Override
     protected void paintComponent(Graphics g) {

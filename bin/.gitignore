@@ -1,2 +1,7 @@
-/controller/
+/ai/
+/logic/
+/main/
+/model/
+/network/
+/utils/
 /view/

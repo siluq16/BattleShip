@@ -15,11 +15,12 @@ import java.util.List;
 public class GamePlayPanel extends JPanel {
 
     private JLayeredPane gameLayeredPane;
-    private BoardPanel   leftBoardView;
-    private BoardPanel   rightBoardView;
+    private BoardPanel   leftBoardView;    
+    private BoardPanel   rightBoardView; 
+    private JLabel       leftBanner, rightBanner;
     private JLabel       turnBadge;
 
-    private EnemyShipTracker enemyShipTracker;
+    private EnemyShipTracker enemyShipTracker;   
     private TurnCounter      turnCounter;
     private GameEngine       engine;
     private GamePlayListener listener;
@@ -30,22 +31,11 @@ public class GamePlayPanel extends JPanel {
     private Timer  turnTimer;
     private JLabel turnTimerLabel;
 
-    private PlayerAvatarCard avatarLeft;
+    private PlayerAvatarCard avatarLeft;   
     private PlayerAvatarCard avatarRight;
     private String namePlayer1 = "BẠN";
     private String namePlayer2 = "ĐỊCH";
     private int    turnCount   = 0;
-    private boolean isMyTurn   = true;
-
-    private JPanel     chatPanel;
-    private JPanel     chatMessages;
-    private JTextField chatInput;
-    private boolean    chatVisible  = false;
-    private String     myName       = "Bạn";
-    private String     oppName      = "Đối Thủ";
-    private JButton    chatButton;
-    private int        unreadCount  = 0;
-
 
     public interface GamePlayListener {
         void onShootAction(int x, int y);
@@ -55,12 +45,22 @@ public class GamePlayPanel extends JPanel {
         void onChatSend(String message);
     }
 
+    private JPanel     chatPanel;
+    private JPanel     chatMessages;
+    private JTextField chatInput;
+    private boolean    chatVisible = false;
+    private String     myName  = "Bạn";
+    private String     oppName = "Đối Thủ";
+    private JButton    chatButton;
+    private int        unreadCount = 0;
+    private boolean isMyTurn = true;
+
     private class EnemyShipTracker extends JPanel {
         private final int[] shipLengths = model.ShipConfig.getSizesFlat();
-        private boolean[] sunkFlags     = new boolean[shipLengths.length];
-        private int[] sunkCount         = new int[7];
-        private int[] totalCount        = new int[7];
-        private int   totalRemaining    = shipLengths.length;
+        private boolean[]   sunkFlags   = new boolean[shipLengths.length];
+        private int[]       sunkCount   = new int[7];   
+        private int[]       totalCount  = new int[7];  
+        private int         totalRemaining = shipLengths.length;
 
         EnemyShipTracker() {
             setOpaque(false);
@@ -91,6 +91,7 @@ public class GamePlayPanel extends JPanel {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,      RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
             int w = getWidth(), h = getHeight();
 
             g2.setColor(new Color(18, 32, 75, 220));
@@ -101,21 +102,30 @@ public class GamePlayPanel extends JPanel {
 
             int padX = 16;
             g2.setFont(UITheme.body(11, Font.BOLD));
-            g2.setColor(UITheme.TEXT_PRIMARY);
+            g2.setColor(UITheme.TEXT_PRIMARY); 
             g2.drawString("Hạm đội địch", padX, 22);
 
             java.util.List<Integer> uniqueLengths = new java.util.ArrayList<>();
-            for (int i = 6; i >= 1; i--) if (totalCount[i] > 0) uniqueLengths.add(i);
+            for (int i = 6; i >= 1; i--) { 
+                if (totalCount[i] > 0) {
+                    uniqueLengths.add(i);
+                }
+            }
 
             int n = uniqueLengths.size();
             if (n == 0) { g2.dispose(); return; }
 
-            int blockW = 12, blockH = 12, gapV = 3, colGap = 22;
-            int totalColsW   = n * blockW + (n - 1) * colGap;
-            int shipAreaStartX = (w - totalColsW) / 2;
-            if (shipAreaStartX < padX + 85) shipAreaStartX = padX + 85;
+            int blockW = 12; 
+            int blockH = 12;
+            int gapV   = 3;
+            int colGap = 22; 
 
-            int bottomY = h - 14;
+            int totalColsW = n * blockW + (n - 1) * colGap;
+            int shipAreaStartX = (w - totalColsW) / 2;
+            
+            if (shipAreaStartX < padX + 85) shipAreaStartX = padX + 85; 
+
+            int bottomY = h - 14; 
             g2.setFont(UITheme.body(10, Font.BOLD));
             FontMetrics numFm = g2.getFontMetrics();
 
@@ -123,16 +133,17 @@ public class GamePlayPanel extends JPanel {
                 int len = uniqueLengths.get(i);
                 int colX = shipAreaStartX + i * (blockW + colGap);
 
-                int remaining   = totalCount[len] - sunkCount[len];
+                int remaining = totalCount[len] - sunkCount[len];
                 boolean isAllSunk = (remaining <= 0);
 
                 String numLbl = String.valueOf(remaining);
                 int numX = colX + (blockW - numFm.stringWidth(numLbl)) / 2;
+                
                 g2.setColor(isAllSunk ? new Color(220, 140, 55, 100) : new Color(220, 170, 80));
                 g2.drawString(numLbl, numX, bottomY);
 
-                int colH   = len * blockH + (len - 1) * gapV;
-                int startY = bottomY - numFm.getAscent() - 8 - colH;
+                int colH = len * blockH + (len - 1) * gapV;
+                int startY = bottomY - numFm.getAscent() - 8 - colH; 
 
                 for (int c = 0; c < len; c++) {
                     int by = startY + c * (blockH + gapV);
@@ -146,6 +157,7 @@ public class GamePlayPanel extends JPanel {
                     }
                 }
             }
+
             g2.dispose();
         }
     }
@@ -166,8 +178,8 @@ public class GamePlayPanel extends JPanel {
         private BufferedImage portrait;
 
         private static final Color[] PALETTE = {
-            new Color(37,  99, 235),
-            new Color(100, 55,  18),
+            new Color(37,  99, 235),  
+            new Color(100, 55,  18),   
         };
 
         PlayerAvatarCard(String name, int colorIndex) {
@@ -176,10 +188,10 @@ public class GamePlayPanel extends JPanel {
             setOpaque(false);
         }
 
-        void setActive(boolean a)           { isActive  = a;   repaint(); }
-        void setDisplayName(String n)       { name      = n;   repaint(); }
-        void setPortrait(BufferedImage img) { portrait  = img; repaint(); }
-        void setSubtitle(String s)          { subtitle  = s != null ? s : ""; repaint(); }
+        void setActive(boolean a)          { isActive = a;   repaint(); }
+        void setDisplayName(String n)      { name = n;       repaint(); }
+        void setPortrait(BufferedImage img){ portrait = img; repaint(); }
+        void setSubtitle(String s)         { subtitle = s != null ? s : ""; repaint(); }
 
         @Override
         protected void paintComponent(Graphics g) {
@@ -187,6 +199,7 @@ public class GamePlayPanel extends JPanel {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,      RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
             int w = getWidth(), h = getHeight();
 
             Color bg = isActive
@@ -194,13 +207,15 @@ public class GamePlayPanel extends JPanel {
                 : new Color(15, 28, 65, 210);
             g2.setColor(bg);
             g2.fill(new RoundRectangle2D.Float(0, 0, w, h, UITheme.RADIUS_SM, UITheme.RADIUS_SM));
+
             g2.setColor(isActive
                 ? new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 200)
                 : new Color(50, 70, 120, 160));
             g2.setStroke(new BasicStroke(isActive ? 2f : 1f));
             g2.draw(new RoundRectangle2D.Float(0.5f, 0.5f, w - 1, h - 1, UITheme.RADIUS_SM, UITheme.RADIUS_SM));
 
-            int portW = Math.min(52, h - 8), portH = h - 8;
+            int portW = Math.min(52, h - 8);
+            int portH = h - 8;
             int px = 5, py = 4;
             g2.setColor(new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 80));
             g2.fill(new RoundRectangle2D.Float(px, py, portW, portH, UITheme.RADIUS_SM, UITheme.RADIUS_SM));
@@ -216,18 +231,21 @@ public class GamePlayPanel extends JPanel {
                     py + (portH + fm.getAscent() - fm.getDescent()) / 2);
             }
 
-            int tx   = px + portW + 8;
+            int tx = px + portW + 8;
             int textW = w - tx - 8;
+
             g2.setFont(UITheme.display(13, Font.BOLD));
             FontMetrics fm = g2.getFontMetrics();
             g2.setColor(UITheme.TEXT_PRIMARY);
-            g2.drawString(clipText(name, fm, textW), tx, py + fm.getAscent() + 2);
+            String dn = clipText(name, fm, textW);
+            g2.drawString(dn, tx, py + fm.getAscent() + 2);
 
             if (!subtitle.isEmpty()) {
                 g2.setFont(UITheme.body(10, Font.PLAIN));
                 fm = g2.getFontMetrics();
                 g2.setColor(UITheme.TEXT_SECONDARY);
-                g2.drawString(clipText(subtitle, fm, textW), tx, py + 18 + fm.getAscent());
+                String sub = clipText(subtitle, fm, textW);
+                g2.drawString(sub, tx, py + 18 + fm.getAscent());
             }
 
             if (isActive) {
@@ -237,6 +255,7 @@ public class GamePlayPanel extends JPanel {
                 g2.setStroke(new BasicStroke(1.2f));
                 g2.drawOval(w - 13, 6, 8, 8);
             }
+
             g2.dispose();
         }
 
@@ -257,7 +276,6 @@ public class GamePlayPanel extends JPanel {
         }
     }
 
-
     public GamePlayPanel(GamePlayListener listener) {
         this.listener = listener;
         setLayout(new BorderLayout());
@@ -268,17 +286,21 @@ public class GamePlayPanel extends JPanel {
         gameLayeredPane = new JLayeredPane();
         gameLayeredPane.setOpaque(false);
 
-        leftBoardView  = new BoardPanel(null, true,  true, null);
-        rightBoardView = new BoardPanel(null, false, true,
-                (x, y) -> { if (this.listener != null) this.listener.onShootAction(x, y); });
+        leftBoardView  = new BoardPanel(null, true, true, null);
+        rightBoardView = new BoardPanel(null, false, true, (x, y) -> listener.onShootAction(x, y));
         leftBoardView.setCellSize(40);
         rightBoardView.setCellSize(40);
 
+        leftBanner  = new JLabel(); leftBanner.setVisible(false);
+        rightBanner = new JLabel(); rightBanner.setVisible(false);
+
         enemyShipTracker = new EnemyShipTracker();
         turnCounter      = new TurnCounter();
-        turnBadge        = buildTurnBadge();
-        avatarLeft       = new PlayerAvatarCard("BẠN",  0);
-        avatarRight      = new PlayerAvatarCard("ĐỊCH", 1);
+
+        turnBadge = buildTurnBadge();
+
+        avatarLeft  = new PlayerAvatarCard("BẠN",  0);
+        avatarRight = new PlayerAvatarCard("ĐỊCH", 1);
 
         gameLayeredPane.add(leftBoardView,    JLayeredPane.DEFAULT_LAYER);
         gameLayeredPane.add(rightBoardView,   JLayeredPane.DEFAULT_LAYER);
@@ -294,7 +316,9 @@ public class GamePlayPanel extends JPanel {
         add(gameLayeredPane, BorderLayout.CENTER);
 
         gameLayeredPane.addComponentListener(new java.awt.event.ComponentAdapter() {
-            @Override public void componentResized(java.awt.event.ComponentEvent e) { layoutComponents(); }
+            @Override public void componentResized(java.awt.event.ComponentEvent e) {
+                layoutComponents();
+            }
         });
 
         turnTimer = new Timer(1000, e -> {
@@ -302,15 +326,10 @@ public class GamePlayPanel extends JPanel {
             updateTurnTimerLabel();
             if (turnSecondsLeft <= 0) {
                 stopTurnTimer();
-                if (listener != null) listener.onTurnTimeout();
+                listener.onTurnTimeout();
             }
         });
     }
-
-    public void setListener(GamePlayListener listener) {
-        this.listener = listener;
-    }
-
 
     private void layoutComponents() {
         int W = gameLayeredPane.getWidth();
@@ -321,16 +340,16 @@ public class GamePlayPanel extends JPanel {
         int avatarH = 68;
         int gap     = 6;
 
-        int maxLen = 0;
+        int maxLen   = 0;
         for (int len : model.ShipConfig.getSizesFlat()) if (len > maxLen) maxLen = len;
         int trackerH = maxLen * 12 + (maxLen - 1) * 3 + 45;
-        int availH   = H - margin - avatarH - gap - trackerH - gap - margin;
-        int halfW    = (W - margin * 3) / 2;
+        int availH = H - margin - avatarH - gap - trackerH - gap - margin;
+        int halfW  = (W - margin * 3) / 2;
 
         int baseCell = Math.min(halfW - 42, availH - 42) / 10;
         baseCell = Math.max(22, Math.min(baseCell, 48));
 
-        int myCell  = Math.max(20, (int)(baseCell * 0.92));
+        int myCell  = Math.max(20, (int)(baseCell * 0.92));  
         int oppCell = Math.max(24, Math.min((int)(baseCell * 1.08), 52));
 
         int myBW  = myCell  * 10 + 32 + 10;
@@ -340,27 +359,34 @@ public class GamePlayPanel extends JPanel {
 
         int leftX  = margin;
         int rightX = W - margin - oppBW;
-        int topY   = margin;
+
+        int topY = margin;
 
         avatarLeft.setBounds(leftX, topY, myBW, avatarH);
         avatarRight.setBounds(rightX, topY, oppBW, avatarH);
 
         int badgeX = leftX + myBW + gap;
         int badgeW = rightX - badgeX - gap;
-        if (badgeW > 20) { turnBadge.setBounds(badgeX, topY, badgeW, avatarH); turnBadge.setVisible(true); }
-        else              { turnBadge.setVisible(false); }
+        if (badgeW > 20) {
+            turnBadge.setBounds(badgeX, topY, badgeW, avatarH);
+            turnBadge.setVisible(true);
+        } else {
+            turnBadge.setVisible(false);
+        }
 
         int trackerY = topY + avatarH + gap;
+        
         int trackerW = (int)(myBW * 0.85);
         int trackerX = leftX + (myBW - trackerW) / 2;
         enemyShipTracker.setBounds(trackerX, trackerY, trackerW, trackerH);
 
-        int myBoardY  = trackerY + trackerH + gap;
+        int myBoardY = trackerY + trackerH + gap;
         leftBoardView.setCellSize(myCell);
         leftBoardView.setBounds(leftX, myBoardY, myBW, myBH);
 
+        int oppBoardY = trackerY; 
         rightBoardView.setCellSize(oppCell);
-        rightBoardView.setBounds(rightX, trackerY, oppBW, oppBH);
+        rightBoardView.setBounds(rightX, oppBoardY, oppBW, oppBH);
 
         chatPanel.setBounds(W - 312, H - 362, 302, 352);
 
@@ -368,17 +394,16 @@ public class GamePlayPanel extends JPanel {
         gameLayeredPane.repaint();
     }
 
-
     private JPanel buildTopBar() {
         JPanel bar = new JPanel(new BorderLayout()) {
             @Override protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
-                GradientPaint gp = new GradientPaint(0, getHeight() - 1, UITheme.ACCENT,
-                        getWidth(), getHeight() - 1, UITheme.PRIMARY);
+                GradientPaint gp = new GradientPaint(0, getHeight()-1, UITheme.ACCENT,
+                        getWidth(), getHeight()-1, UITheme.PRIMARY);
                 g2.setPaint(gp);
                 g2.setStroke(new BasicStroke(2f));
-                g2.drawLine(0, getHeight() - 1, getWidth(), getHeight() - 1);
+                g2.drawLine(0, getHeight()-1, getWidth(), getHeight()-1);
                 g2.dispose();
             }
         };
@@ -391,18 +416,18 @@ public class GamePlayPanel extends JPanel {
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 Color bg = turnSecondsLeft <= 10 ? UITheme.DANGER : UITheme.BG_ELEVATED;
                 g2.setColor(bg);
-                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(),
+                g2.fill(new java.awt.geom.RoundRectangle2D.Float(0,0,getWidth(),getHeight(),
                         UITheme.RADIUS_PILL, UITheme.RADIUS_PILL));
                 g2.setColor(turnSecondsLeft <= 10 ? UITheme.DANGER_DARK : UITheme.BORDER);
                 g2.setStroke(new BasicStroke(1.2f));
-                g2.draw(new RoundRectangle2D.Float(0.6f, 0.6f, getWidth() - 1.2f, getHeight() - 1.2f,
+                g2.draw(new java.awt.geom.RoundRectangle2D.Float(0.6f,0.6f,getWidth()-1.2f,getHeight()-1.2f,
                         UITheme.RADIUS_PILL, UITheme.RADIUS_PILL));
                 g2.setFont(getFont());
                 FontMetrics fm = g2.getFontMetrics();
                 String t = getText();
                 g2.setColor(Color.WHITE);
-                g2.drawString(t, (getWidth() - fm.stringWidth(t)) / 2,
-                        (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
+                g2.drawString(t, (getWidth()-fm.stringWidth(t))/2,
+                        (getHeight()+fm.getAscent()-fm.getDescent())/2);
                 g2.dispose();
             }
         };
@@ -421,15 +446,20 @@ public class GamePlayPanel extends JPanel {
         chatButton.setPreferredSize(new Dimension(110, 36));
         chatButton.setVisible(false);
         chatButton.addActionListener(e -> toggleChat());
-
         JButton btnPause = UIComponents.outlineButton("Cài Đặt");
         btnPause.setPreferredSize(new Dimension(150, 36));
         btnPause.addActionListener(e -> showPauseMenu());
-
         rightBtns.add(chatButton);
         rightBtns.add(btnPause);
         bar.add(rightBtns, BorderLayout.EAST);
+
         return bar;
+    }
+
+    private JLabel buildBannerLabel() {
+        JLabel lbl = new JLabel();
+        lbl.setVisible(false);
+        return lbl;
     }
 
     private JLabel buildTurnBadge() {
@@ -437,7 +467,7 @@ public class GamePlayPanel extends JPanel {
             @Override protected void paintComponent(Graphics g) {
                 if (getWidth() < 10) return;
                 Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,      RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
                 int w = getWidth(), h = getHeight();
 
@@ -446,7 +476,7 @@ public class GamePlayPanel extends JPanel {
                 Color borderC = turnCount > 0 && isMyTurn ? UITheme.PRIMARY : UITheme.DANGER;
                 g2.setColor(new Color(borderC.getRed(), borderC.getGreen(), borderC.getBlue(), 160));
                 g2.setStroke(new BasicStroke(1.5f));
-                g2.draw(new RoundRectangle2D.Float(0.75f, 0.75f, w - 1.5f, h - 1.5f,
+                g2.draw(new RoundRectangle2D.Float(0.75f, 0.75f, w-1.5f, h-1.5f,
                         UITheme.RADIUS_MD, UITheme.RADIUS_MD));
 
                 g2.setFont(UITheme.body(9, Font.BOLD));
@@ -472,6 +502,7 @@ public class GamePlayPanel extends JPanel {
                 g2.fill(new RoundRectangle2D.Float(px, py, pw, ph, UITheme.RADIUS_PILL, UITheme.RADIUS_PILL));
                 g2.setColor(Color.WHITE);
                 g2.drawString(pillTxt, px + (pw - fm.stringWidth(pillTxt)) / 2, py + fm.getAscent() + 1);
+
                 g2.dispose();
             }
         };
@@ -480,12 +511,12 @@ public class GamePlayPanel extends JPanel {
     }
 
     private void showPauseMenu() {
-        if (listener != null) listener.onPauseResume(false);
+        listener.onPauseResume(false);
         UIComponents.showPauseDialog(
             this, isLanMode, SoundManager.isMuted,
-            () -> { if (listener != null) listener.onPauseResume(true); },
+            () -> listener.onPauseResume(true),
             muted -> SoundManager.isMuted = muted,
-            () -> { if (listener != null) listener.onSurrenderOrExit(); }
+            () -> listener.onSurrenderOrExit()
         );
     }
 
@@ -494,13 +525,13 @@ public class GamePlayPanel extends JPanel {
         updateTurnTimerLabel();
         turnTimer.start();
     }
-
+    
     public void resetTurnTimer() {
-        turnSecondsLeft = TURN_SECONDS;
-        updateTurnTimerLabel();
-        turnTimer.restart();
+        turnSecondsLeft = TURN_SECONDS; 
+        updateTurnTimerLabel();        
+        turnTimer.restart();         
     }
-
+    
     public void stopTurnTimer()   { turnTimer.stop(); }
     public void pauseTurnTimer()  { turnTimer.stop(); }
     public void resumeTurnTimer() { if (turnSecondsLeft > 0) turnTimer.start(); }
@@ -521,8 +552,8 @@ public class GamePlayPanel extends JPanel {
         rightBoardView.setBoard(engine.getBoard2());
         leftBoardView.setOwnerMode(true);
         rightBoardView.setOwnerMode(false);
-        leftBoardView.setGridColor(UITheme.PRIMARY);
-        rightBoardView.setGridColor(UITheme.DANGER);
+        leftBoardView.setGridColor(UITheme.PRIMARY);      
+        rightBoardView.setGridColor(UITheme.DANGER);    
 
         enemyShipTracker.refresh(engine);
         layoutComponents();
@@ -542,10 +573,10 @@ public class GamePlayPanel extends JPanel {
         if (avatarRight != null) avatarRight.setSubtitle(sub2);
     }
 
-    public void updateBoardsAndBanner(boolean myTurn, boolean isEvEMode) {
-        this.isMyTurn = myTurn;
+    public void updateBoardsAndBanner(boolean isMyTurn, boolean isEvEMode) {
+    	this.isMyTurn = isMyTurn;
         turnCount++;
-        if (myTurn) {
+        if (isMyTurn) {
             rightBoardView.setEnabled(true);
             avatarLeft.setActive(true);
             avatarRight.setActive(false);
@@ -554,8 +585,8 @@ public class GamePlayPanel extends JPanel {
             avatarLeft.setActive(false);
             avatarRight.setActive(true);
         }
-        if (turnBadge   != null) turnBadge.repaint();
-        if (turnCounter != null) turnCounter.setTurn(myTurn, turnCount);
+        if (turnBadge != null) turnBadge.repaint();
+        if (turnCounter != null) turnCounter.setTurn(isMyTurn, turnCount);
         enemyShipTracker.refresh(engine);
         leftBoardView.repaint();
         rightBoardView.repaint();
@@ -588,14 +619,14 @@ public class GamePlayPanel extends JPanel {
                 int r = UITheme.RADIUS_LG;
                 for (int i = 4; i >= 1; i--) {
                     g2.setColor(new Color(0,0,0,18*i));
-                    g2.fill(new RoundRectangle2D.Float(i,i+2,getWidth()-i,getHeight()-i,r,r));
+                    g2.fill(new java.awt.geom.RoundRectangle2D.Float(i,i+2,getWidth()-i,getHeight()-i,r,r));
                 }
                 g2.setColor(new Color(UITheme.BG_SURFACE.getRed(), UITheme.BG_SURFACE.getGreen(),
                         UITheme.BG_SURFACE.getBlue(), 230));
-                g2.fill(new RoundRectangle2D.Float(0,0,getWidth(),getHeight(),r,r));
+                g2.fill(new java.awt.geom.RoundRectangle2D.Float(0,0,getWidth(),getHeight(),r,r));
                 g2.setColor(UITheme.BORDER);
-                g2.setStroke(new BasicStroke(1.2f));
-                g2.draw(new RoundRectangle2D.Float(0.6f,0.6f,getWidth()-1.2f,getHeight()-1.2f,r,r));
+                g2.setStroke(new java.awt.BasicStroke(1.2f));
+                g2.draw(new java.awt.geom.RoundRectangle2D.Float(0.6f,0.6f,getWidth()-1.2f,getHeight()-1.2f,r,r));
                 UITheme.paintTopAccent(g2, r, 0, getWidth()-r*2, r);
                 g2.dispose();
             }
@@ -637,11 +668,12 @@ public class GamePlayPanel extends JPanel {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(UITheme.BG_ELEVATED);
-                g2.fill(new RoundRectangle2D.Float(0,0,getWidth(),getHeight(),UITheme.RADIUS_MD,UITheme.RADIUS_MD));
+                g2.fill(new java.awt.geom.RoundRectangle2D.Float(0,0,getWidth(),getHeight(),
+                        UITheme.RADIUS_MD, UITheme.RADIUS_MD));
                 g2.setColor(isFocusOwner() ? UITheme.ACCENT : UITheme.BORDER);
-                g2.setStroke(new BasicStroke(isFocusOwner() ? 2f : 1f));
-                g2.draw(new RoundRectangle2D.Float(0.6f,0.6f,getWidth()-1.2f,getHeight()-1.2f,
-                        UITheme.RADIUS_MD,UITheme.RADIUS_MD));
+                g2.setStroke(new java.awt.BasicStroke(isFocusOwner() ? 2f : 1f));
+                g2.draw(new java.awt.geom.RoundRectangle2D.Float(0.6f,0.6f,getWidth()-1.2f,getHeight()-1.2f,
+                        UITheme.RADIUS_MD, UITheme.RADIUS_MD));
                 super.paintComponent(g);
                 g2.dispose();
             }
@@ -660,6 +692,7 @@ public class GamePlayPanel extends JPanel {
         inputRow.add(chatInput, BorderLayout.CENTER);
         inputRow.add(sendBtn,   BorderLayout.EAST);
         panel.add(inputRow, BorderLayout.SOUTH);
+
         return panel;
     }
 
@@ -668,7 +701,7 @@ public class GamePlayPanel extends JPanel {
         if (text.isEmpty()) return;
         chatInput.setText("");
         addChatMessage(myName, text, true);
-        if (listener != null) listener.onChatSend(text);
+        listener.onChatSend(text);
     }
 
     private void toggleChat() {
@@ -696,13 +729,13 @@ public class GamePlayPanel extends JPanel {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(bgColor);
-                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(),
+                g2.fill(new java.awt.geom.RoundRectangle2D.Float(0, 0, getWidth(), getHeight(),
                         UITheme.RADIUS_MD, UITheme.RADIUS_MD));
                 g2.dispose();
             }
             @Override public Dimension getPreferredSize() {
                 Dimension d = super.getPreferredSize();
-                int maxW = chatMessages.getWidth() > 0 ? (int)(chatMessages.getWidth() * 0.72) : 180;
+                int maxW = chatMessages.getWidth() > 0 ? (int)(chatMessages.getWidth()*0.72) : 180;
                 d.width = Math.min(d.width, maxW);
                 return d;
             }
@@ -731,7 +764,7 @@ public class GamePlayPanel extends JPanel {
         chatMessages.revalidate();
         chatMessages.repaint();
 
-        SwingUtilities.invokeLater(() -> {
+        javax.swing.SwingUtilities.invokeLater(() -> {
             JScrollPane sp = (JScrollPane) chatMessages.getParent().getParent();
             sp.getVerticalScrollBar().setValue(sp.getVerticalScrollBar().getMaximum());
         });
@@ -743,8 +776,8 @@ public class GamePlayPanel extends JPanel {
     }
 
     public void setChatEnabled(boolean enabled, String myPlayerName, String opponentName) {
-        myName  = myPlayerName != null ? myPlayerName : "Bạn";
-        oppName = opponentName != null ? opponentName : "Đối Thủ";
+        myName  = myPlayerName  != null ? myPlayerName  : "Bạn";
+        oppName = opponentName  != null ? opponentName  : "Đối Thủ";
         if (chatButton != null) chatButton.setVisible(enabled);
         unreadCount = 0;
         updateChatBadge();
@@ -773,7 +806,7 @@ public class GamePlayPanel extends JPanel {
         }
 
         RadialGradientPaint vig = new RadialGradientPaint(
-            new java.awt.Point(getWidth() / 2, getHeight() / 2),
+            new java.awt.Point(getWidth()/2, getHeight()/2),
             Math.max(getWidth(), getHeight()) * 0.65f,
             new float[]{ 0.4f, 1.0f },
             new Color[]{ new Color(0,0,0,0), new Color(0,0,0,120) }
@@ -785,7 +818,7 @@ public class GamePlayPanel extends JPanel {
         g2.setPaint(accent);
         g2.setStroke(new BasicStroke(2f));
         g2.drawLine(0, 0, getWidth(), 0);
-        g2.drawLine(0, getHeight() - 1, getWidth(), getHeight() - 1);
+        g2.drawLine(0, getHeight()-1, getWidth(), getHeight()-1);
 
         g2.dispose();
     }
